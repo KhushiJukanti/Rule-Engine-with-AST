@@ -208,3 +208,27 @@ exports.getAllRules = async (req, res) => {
         res.status(500).json({ error: 'Server error' });
     }
 };
+
+
+// Controller function to delete a rule
+exports.deleteRule = async (req, res) => {
+    try {
+        const ruleId = req.params.id; // Get the rule ID from the request parameters
+
+        if (!ruleId) {
+            return res.status(400).json({ message: 'Rule ID is required' });
+        }
+
+        const deletedRule = await Rule.findByIdAndDelete(ruleId);
+
+        if (!deletedRule) {
+            return res.status(404).json({ message: 'Rule not found' });
+        }
+
+        res.status(200).json({ message: 'Rule deleted successfully', deletedRule });
+    } catch (error) {
+        console.error('Error deleting rule:', error.message);
+        res.status(500).json({ message: 'Error deleting rule', error });
+    }
+};
+
