@@ -13,6 +13,6 @@ router.put("/modify", ruleController.modifyRule);
 
 router.get("/", ruleController.getAllRules);
 
-router.delete('/routes/:id', ruleController.deleteRule);
+router.delete('/delete/:id', ruleController.deleteRule);
 
 module.exports = router;
