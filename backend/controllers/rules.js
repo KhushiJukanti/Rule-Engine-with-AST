@@ -130,26 +130,60 @@ exports.createRule = async (req, res) => {
 
 
 // Controller function to evaluate a rule
+// exports.evaluateRule = async (req, res) => {
+//     try {
+//         const ruleId = req.body.ruleId; // Ensure the key matches your request
+//         const data = req.body.data;
+
+//         if (!ruleId || !data) {
+//             return res.status(400).send({ message: 'Rule ID and data are required' });
+//         }
+
+//         const rule = await Rule.findById(ruleId);
+//         if (!rule) {
+//             return res.status(404).send({ message: 'Rule not found' });
+//         }
+
+//         const result = evaluateNode(rule.ast, data); // Use evaluateNode if that's the right function
+//         res.status(200).send({ result, ruleString: rule.ruleString });
+//     } catch (error) {
+//         res.status(500).send({ message: 'Error evaluating rule', error });
+//     }
+// };
+
+
 exports.evaluateRule = async (req, res) => {
     try {
-        const ruleId = req.body.ruleId; // Ensure the key matches your request
-        const data = req.body.data;
+        const { data } = req.body; // No ruleId or ruleString required, just the data
 
-        if (!ruleId || !data) {
-            return res.status(400).send({ message: 'Rule ID and data are required' });
+        if (!data) {
+            return res.status(400).send({ message: 'Data is required' });
         }
 
-        const rule = await Rule.findById(ruleId);
-        if (!rule) {
-            return res.status(404).send({ message: 'Rule not found' });
+        // Fetch all rules from the database
+        const rules = await Rule.find(); // Assuming Rule is the model for your rules
+
+        // Check if any rule matches the provided data
+        let isRuleMatched = false;
+        for (let rule of rules) {
+            // Parse and evaluate each rule's string using the same logic as before
+            const ast = parseRuleString(rule.ruleString);
+            const result = evaluateNode(ast, data);
+            
+            if (result) {
+                isRuleMatched = true;
+                break; // Exit loop early if a matching rule is found
+            }
         }
 
-        const result = evaluateNode(rule.ast, data); // Use evaluateNode if that's the right function
-        res.status(200).send({ result, ruleString: rule.ruleString });
+        // Send the result (true if any rule matches, false otherwise)
+        res.status(200).send({ result: isRuleMatched });
     } catch (error) {
         res.status(500).send({ message: 'Error evaluating rule', error });
     }
 };
+
+
 
 
 exports.combineRules = async (req, res) => {
