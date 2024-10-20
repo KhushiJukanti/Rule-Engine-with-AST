@@ -9,7 +9,7 @@ router.post("/combine", ruleController.combineRules);
 
 router.post("/evaluate", ruleController.evaluateRule);
 
-router.put("/modify", ruleController.modifyRule);
+router.put('/modify/:id', ruleController.modifyRule);
 
 router.get("/", ruleController.getAllRules);
 
