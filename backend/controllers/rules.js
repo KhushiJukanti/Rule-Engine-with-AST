@@ -216,21 +216,38 @@ exports.combineRules = async (req, res) => {
 
 exports.modifyRule = async (req, res) => {
     try {
-        const { ruleId, newRuleString } = req.body;
-        const newAST = parseRuleString(newRuleString);
-        const rule = await Rule.findById(ruleId);
-        if (!rule) {
-            return res.status(404).json({ error: 'Rule not found' });
+        const { id: ruleId } = req.params; // Use 'id' instead of 'ruleId' based on your route params
+        console.log('Received ruleId:', ruleId); // Log the ruleId for debugging
+        
+        const { newRuleString } = req.body; // Get the new rule string from request body
+        if (!newRuleString) {
+            return res.status(400).json({ error: 'New rule string is required' }); // Check if the new rule string is provided
         }
 
+        const newAST = parseRuleString(newRuleString); // Parse the new rule string into AST
+        
+        // Find the rule by its ID in the database
+        const rule = await Rule.findById(ruleId);
+        if (!rule) {
+            return res.status(404).json({ error: 'Rule not found' }); // Return if rule doesn't exist
+        }
+
+        // Update the rule's string and AST with the new values
         rule.ruleString = newRuleString;
         rule.ast = newAST;
-        await rule.save();
-        res.json(rule);
+        
+        await rule.save(); // Save the modified rule
+        
+        res.status(200).json(rule); // Return the updated rule object
     } catch (error) {
-        res.status(400).json({ error: 'Invalid rule string or rule not found' });
+        console.error('Error modifying rule:', error); // Log the error for debugging
+        res.status(500).json({ error: 'Failed to modify the rule' }); // General error message for failed request
     }
 };
+
+
+
+
 
 
 exports.getAllRules = async (req, res) => {
