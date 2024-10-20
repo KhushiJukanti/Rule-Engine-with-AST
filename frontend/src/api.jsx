@@ -16,3 +16,6 @@ export const evaluateRule = (evaluationData) => axios.post(`${API_URL}/evaluate`
 
 // Delete a rule
 export const deleteRule = (ruleId) => axios.delete(`${API_URL}/delete/${ruleId}`);
+
+// Update a rule
+export const updateRule = (ruleId, ruleData) => axios.put(`${API_URL}/modify/${ruleId}`, ruleData);
