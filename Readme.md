@@ -38,7 +38,7 @@ This project implements a rule engine using an Abstract Syntax Tree (AST) to eva
       
     - **For the backend :** 
         ```bash
-        cd frontend
+        cd backend
         npm install
         ```
 
